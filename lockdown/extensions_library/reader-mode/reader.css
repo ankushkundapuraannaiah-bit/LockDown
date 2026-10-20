@@ -1,0 +1,20 @@
+#lockdown-reader-btn {
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                z-index: 999999;
+                background: #E67300;
+                color: #FFFFFF;
+                border: 2px solid #FFDE59;
+                border-radius: 20px;
+                padding: 8px 16px;
+                font-family: system-ui, -apple-system, sans-serif;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                transition: transform 0.2s;
+            }
+            #lockdown-reader-btn:hover {
+                transform: scale(1.05);
+            }

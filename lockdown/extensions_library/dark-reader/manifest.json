@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Dark Reader Pro",
+  "version": "1.2.0",
+  "description": "Smart nocturnal dark mode for every website",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "dark.css"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

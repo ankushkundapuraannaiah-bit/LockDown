@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Clean Reader Mode",
+  "version": "1.5.0",
+  "description": "Editorial distraction-free reader mode",
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

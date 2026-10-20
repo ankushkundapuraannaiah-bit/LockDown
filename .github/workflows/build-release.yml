@@ -1,0 +1,70 @@
+name: Build & Release LockDown Browser
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build EXE with PyInstaller
+        run: python -m PyInstaller LockDownBrowser.spec
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup -y
+        shell: powershell
+
+      - name: Compile Installer with Inno Setup
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+        shell: powershell
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LockDownBrowser-Setup
+          path: Output\LockDownBrowser-Setup.exe
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Lock Down Browser ${{ github.ref_name }}"
+          body: |
+            ## 🔒 Lock Down Browser ${{ github.ref_name }}
+
+            ### What's New
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+
+            ### Installation
+            1. Download **LockDownBrowser-Setup.exe** below
+            2. Run the installer and follow the steps
+            3. Launch from your Desktop or Start Menu
+
+            ### Run from Source
+            ```bash
+            pip install -r requirements.txt
+            python browser.py
+            ```
+          files: Output\LockDownBrowser-Setup.exe
+          draft: false
+          prerelease: false

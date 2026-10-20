@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Unhook - Focus Mode for YouTube",
+  "version": "1.6.0",
+  "description": "Hide YouTube distractions and recommendations",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}

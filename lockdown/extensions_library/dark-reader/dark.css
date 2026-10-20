@@ -1,0 +1,11 @@
+html[data-lockdown-dark="true"] {
+                filter: invert(90%) hue-rotate(180deg) !important;
+                background-color: #121212 !important;
+            }
+            html[data-lockdown-dark="true"] img,
+            html[data-lockdown-dark="true"] video,
+            html[data-lockdown-dark="true"] canvas,
+            html[data-lockdown-dark="true"] iframe,
+            html[data-lockdown-dark="true"] svg {
+                filter: invert(100%) hue-rotate(180deg) !important;
+            }
