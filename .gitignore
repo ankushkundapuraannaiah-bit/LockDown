@@ -56,5 +56,5 @@ logo of lock down.jpg
 # PyInstaller output
 Output/
 
-# Screenshots directory (use docs/screenshots/ instead)
-screenshots/
+# Screenshots directory at root (use docs/screenshots/ instead for tracked docs)
+/screenshots/

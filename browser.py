@@ -14,6 +14,14 @@ from lockdown.ui.main_window import LockDownBrowserWindow
 
 
 def main():
+    # Set Windows AppUserModelID so Windows taskbar displays the app icon properly
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("LockDown.Browser.App.2.0")
+        except Exception:
+            pass
+
     # Enable high-DPI scaling and OpenGL sharing if supported
     for attr_name in ("AA_EnableHighDpiScaling", "AA_UseHighDpiPixmaps", "AA_ShareOpenGLContexts"):
         try:

@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from pathlib import Path
 
 APP_NAME = "Lock Down"
@@ -45,7 +46,23 @@ MODERN_USER_AGENT = (
     "Chrome/140.0.0.0 Safari/537.36"
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+else:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _resolve_asset(rel_path: str) -> Path:
+    candidates = [
+        BASE_DIR / rel_path,
+        BASE_DIR / "_internal" / rel_path,
+        Path(sys.executable).resolve().parent / rel_path,
+        Path(sys.executable).resolve().parent / "_internal" / rel_path,
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return BASE_DIR / rel_path
 
 
 def _is_writable_dir(path: Path) -> bool:
@@ -68,6 +85,9 @@ def _resolve_user_data_dir() -> Path:
     candidates = []
     if override:
         candidates.append(Path(override).expanduser())
+    appdata = os.environ.get("APPDATA")
+    if appdata:
+        candidates.append(Path(appdata) / "LockDownBrowser")
     candidates.append(Path(os.path.expanduser("~/.lockdown_browser")))
     candidates.append(BASE_DIR / ".lockdown_browser_data")
     candidates.append(BASE_DIR / ".lockdown_browser_runtime")
@@ -83,7 +103,7 @@ def _resolve_user_data_dir() -> Path:
 USER_DATA_DIR = _resolve_user_data_dir()
 VAULT_DIR = USER_DATA_DIR / "secure_vault"
 EXTENSIONS_DIR = USER_DATA_DIR / "extensions"
-LIBRARY_EXTENSIONS_DIR = BASE_DIR / "lockdown" / "extensions_library"
+LIBRARY_EXTENSIONS_DIR = _resolve_asset("lockdown/extensions_library")
 SETTINGS_FILE = USER_DATA_DIR / "settings.json"
 BOOKMARKS_FILE = USER_DATA_DIR / "bookmarks.json"
 NOTES_FILE = USER_DATA_DIR / "flow_notes.json"
@@ -92,10 +112,10 @@ LOCAL_VAULT_FILE = VAULT_DIR / "history.vault"
 LOCAL_VAULT_META = VAULT_DIR / "vault_meta.json"
 DOWNLOADS_DIR = Path.home() / "Downloads"
 
-LOGO_ORIGINAL = BASE_DIR / "lockdown_logo.png"
-LOGO_TRANSPARENT = BASE_DIR / "lockdown_logo_transparent.png"
-LOGO_ICO = BASE_DIR / "lockdown_logo.ico"
-ICONS_DIR = BASE_DIR / "icons"
+LOGO_ORIGINAL = _resolve_asset("lockdown_logo.png")
+LOGO_TRANSPARENT = _resolve_asset("lockdown_logo_transparent.png")
+LOGO_ICO = _resolve_asset("lockdown_logo.ico")
+ICONS_DIR = _resolve_asset("icons")
 
 # Search Engines - Clean standard endpoints prevent automated bot/CAPTCHA flags
 SEARCH_ENGINES = {
