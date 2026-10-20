@@ -36,7 +36,18 @@ jobs:
 
       - name: Compile Installer with Inno Setup
         run: |
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" setup.iss
+          $iscc = (Get-Command iscc -ErrorAction SilentlyContinue).Source
+          if (-not $iscc) {
+              if (Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe") {
+                  $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+              } elseif (Test-Path "C:\Program Files\Inno Setup 6\ISCC.exe") {
+                  $iscc = "C:\Program Files\Inno Setup 6\ISCC.exe"
+              } elseif (Test-Path "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe") {
+                  $iscc = "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe"
+              }
+          }
+          Write-Host "Using Inno Setup compiler: $iscc"
+          & $iscc setup.iss
         shell: powershell
 
       - name: Upload installer artifact
