@@ -2,8 +2,8 @@
 ; Professional Installer Configuration
 
 #define MyAppName "Lock Down Browser"
-#define MyAppVersion "2.0.0"
-#define MyAppPublisher "LockDown"
+#define MyAppVersion "2.0.1"
+#define MyAppPublisher "Ankush"
 #define MyAppURL "https://github.com/ankushkundapuraannaiah-bit/LockDown"
 #define MyAppExeName "LockDownBrowser.exe"
 #define MyAppId "{{A7F3C2B1-4E8D-4F9A-B2C3-D1E5F6A7B8C9}"
@@ -17,6 +17,12 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}/issues
 AppUpdatesURL={#MyAppURL}/releases
+VersionInfoCompany=Ankush
+VersionInfoDescription=Lock Down Browser Setup
+VersionInfoVersion={#MyAppVersion}
+VersionInfoCopyright=Copyright (C) Ankush
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -31,15 +37,15 @@ WizardSizePercent=120
 DisableProgramGroupPage=no
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
+Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; Check: not IsAdminInstallMode
 
 [Files]
 Source: "dist\LockDownBrowser\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

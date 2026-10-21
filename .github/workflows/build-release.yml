@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -29,6 +30,10 @@ jobs:
       - name: Build EXE with PyInstaller
         run: python -m PyInstaller LockDownBrowser.spec
 
+      - name: Sign PyInstaller Binary
+        run: powershell -ExecutionPolicy Bypass -File .\sign_binaries.ps1 -FilesToSign "dist\LockDownBrowser\LockDownBrowser.exe"
+        shell: powershell
+
       - name: Install Inno Setup
         run: |
           choco install innosetup -y
@@ -50,11 +55,18 @@ jobs:
           & $iscc setup.iss
         shell: powershell
 
+      - name: Sign Setup Installer
+        run: powershell -ExecutionPolicy Bypass -File .\sign_binaries.ps1 -FilesToSign "Output\LockDownBrowser-Setup.exe"
+        shell: powershell
+
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
           name: LockDownBrowser-Setup
-          path: Output\LockDownBrowser-Setup.exe
+          path: |
+            Output\LockDownBrowser-Setup.exe
+            AnkushCodeSigning.cer
+            Trust-Certificate.bat
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -62,6 +74,8 @@ jobs:
           name: "Lock Down Browser ${{ github.ref_name }}"
           body: |
             ## 🔒 Lock Down Browser ${{ github.ref_name }}
+
+            ### Publisher: Ankush
 
             ### What's New
             See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
@@ -71,11 +85,20 @@ jobs:
             2. Run the installer and follow the steps
             3. Launch from your Desktop or Start Menu
 
+            > **Note on Windows Defender SmartScreen:**
+            > If Windows SmartScreen displays "Windows protected your PC", you can either:
+            > - Click **"More info"** and click **"Run anyway"**
+            > - Or right-click `LockDownBrowser-Setup.exe` -> **Properties** -> check **Unblock** -> **OK**
+            > - Or download and run `Trust-Certificate.bat` as Administrator to permanently trust all apps from **Ankush**.
+
             ### Run from Source
             ```bash
             pip install -r requirements.txt
             python browser.py
             ```
-          files: Output\LockDownBrowser-Setup.exe
+          files: |
+            Output\LockDownBrowser-Setup.exe
+            AnkushCodeSigning.cer
+            Trust-Certificate.bat
           draft: false
           prerelease: false

@@ -63,6 +63,14 @@
 2. Run the installer and follow the steps
 3. Launch **Lock Down Browser** from your Desktop or Start Menu
 
+> [!NOTE]
+> **Verified Publisher: Ankush**  
+> If Microsoft Defender SmartScreen displays a warning (*"Windows protected your PC"*):
+> - Click **"More info"** — the publisher will display as **Ankush**.
+> - Click **"Run anyway"**.
+> - Or right-click `LockDownBrowser-Setup.exe` ➔ **Properties** ➔ check **Unblock** ➔ **OK**.
+> - You can also run `Trust-Certificate.bat` as Administrator to permanently trust all builds signed by Ankush.
+
 ---
 
 ### Option 2 — Run from Source

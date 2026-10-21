@@ -77,6 +77,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon='lockdown_logo.ico',
+    version='file_version_info.txt',
 )
 
 coll = COLLECT(
