@@ -1,5 +1,6 @@
 PyQt6>=6.11.0
 PyQt6-WebEngine>=6.11.0
+cryptography>=42.0.0
 flask>=3.0.0
 werkzeug>=3.0.0
 httpx>=0.28.0

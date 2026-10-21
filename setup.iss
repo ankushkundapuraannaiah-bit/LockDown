@@ -2,7 +2,7 @@
 ; Professional Installer Configuration
 
 #define MyAppName "Lock Down Browser"
-#define MyAppVersion "2.0.1"
+#define MyAppVersion "2.0.2"
 #define MyAppPublisher "Ankush"
 #define MyAppURL "https://github.com/ankushkundapuraannaiah-bit/LockDown"
 #define MyAppExeName "LockDownBrowser.exe"

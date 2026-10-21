@@ -8,6 +8,9 @@ block_cipher = None
 # Collect all PyQt6 files (needed for WebEngine)
 pyqt6_datas, pyqt6_binaries, pyqt6_hiddenimports = collect_all('PyQt6')
 
+# Collect all cryptography files (needed for CryptoVault)
+crypto_datas, crypto_binaries, crypto_hiddenimports = collect_all('cryptography')
+
 # Lock Down Browser source datas
 added_datas = [
     ('lockdown', 'lockdown'),
@@ -20,9 +23,20 @@ added_datas = [
 a = Analysis(
     ['browser.py'],
     pathex=['.'],
-    binaries=pyqt6_binaries,
-    datas=added_datas + pyqt6_datas,
-    hiddenimports=pyqt6_hiddenimports + [
+    binaries=pyqt6_binaries + crypto_binaries,
+    datas=added_datas + pyqt6_datas + crypto_datas,
+    hiddenimports=pyqt6_hiddenimports + crypto_hiddenimports + [
+        'cryptography',
+        'cryptography.exceptions',
+        'cryptography.hazmat',
+        'cryptography.hazmat.primitives',
+        'cryptography.hazmat.primitives.hashes',
+        'cryptography.hazmat.primitives.ciphers',
+        'cryptography.hazmat.primitives.ciphers.aead',
+        'cryptography.hazmat.primitives.kdf',
+        'cryptography.hazmat.primitives.kdf.pbkdf2',
+        'cryptography.hazmat.backends',
+        'cryptography.hazmat.backends.openssl',
         'lockdown',
         'lockdown.config',
         'lockdown.theme',

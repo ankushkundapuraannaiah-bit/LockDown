@@ -12,10 +12,20 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from cryptography.exceptions import InvalidTag
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+try:
+    from cryptography.exceptions import InvalidTag
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    HAVE_CRYPTOGRAPHY = True
+except (ImportError, Exception) as _crypto_err:
+    HAVE_CRYPTOGRAPHY = False
+    class InvalidTag(Exception):
+        pass
+    hashes = None
+    AESGCM = None
+    PBKDF2HMAC = None
+    print(f"[CryptoVault] Cryptography library not loaded: {_crypto_err}")
 
 from lockdown.config import (
     LOCAL_VAULT_FILE,
@@ -81,6 +91,8 @@ class CryptoVault:
 
     def derive_key_from_password(self, password: str, salt: bytes) -> bytes:
         """Derives a 256-bit AES key from a password using PBKDF2-HMAC-SHA256."""
+        if not HAVE_CRYPTOGRAPHY or PBKDF2HMAC is None:
+            raise RuntimeError("Cryptography library is not available.")
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
@@ -229,6 +241,8 @@ class CryptoVault:
         """Encrypts arbitrary bytes using AES-256-GCM.
         Returns: 12-byte nonce + ciphertext + 16-byte auth tag.
         """
+        if not HAVE_CRYPTOGRAPHY or AESGCM is None:
+            raise ValueError("Cryptography library is not available.")
         active_key = key or self._current_key
         if not active_key:
             raise ValueError("Vault is locked: no encryption key available.")
@@ -240,6 +254,8 @@ class CryptoVault:
 
     def decrypt_payload(self, encrypted_bytes: bytes, key: Optional[bytes] = None) -> bytes:
         """Decrypts AES-256-GCM payload with tag verification."""
+        if not HAVE_CRYPTOGRAPHY or AESGCM is None:
+            raise ValueError("Cryptography library is not available.")
         active_key = key or self._current_key
         if not active_key:
             raise ValueError("Vault is locked: no decryption key available.")
