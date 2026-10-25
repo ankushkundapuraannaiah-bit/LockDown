@@ -9,16 +9,26 @@ echo.
 
 cd /d "%~dp0"
 
-:: 1. Sign PyInstaller binary
-echo [1/3] Signing dist\LockDownBrowser\LockDownBrowser.exe...
+:: 1. Compile PyInstaller distribution
+echo [1/4] Building with PyInstaller...
+python -m PyInstaller --noconfirm LockDownBrowser.spec
+if %errorlevel% neq 0 (
+    echo ERROR: PyInstaller build failed!
+    pause
+    exit /b %errorlevel%
+)
+
+:: 2. Sign PyInstaller binary
+echo.
+echo [2/4] Signing dist\LockDownBrowser\LockDownBrowser.exe...
 powershell -NoProfile -ExecutionPolicy Bypass -File .\sign_binaries.ps1 -FilesToSign "dist\LockDownBrowser\LockDownBrowser.exe"
 if %errorlevel% neq 0 (
     echo Warning: Signing dist binary encountered an issue.
 )
 
-:: 2. Compile Inno Setup Installer
+:: 3. Compile Inno Setup Installer
 echo.
-echo [2/3] Compiling Inno Setup Installer...
+echo [3/4] Compiling Inno Setup Installer...
 set "ISCC=%LOCALAPPDATA%\Programs\Inno Setup 6\ISCC.exe"
 if not exist "%ISCC%" set "ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
 if not exist "%ISCC%" set "ISCC=C:\Program Files\Inno Setup 6\ISCC.exe"
@@ -36,9 +46,9 @@ if exist "%ISCC%" (
     exit /b 1
 )
 
-:: 3. Sign the Installer
+:: 4. Sign the Installer
 echo.
-echo [3/3] Signing Output\LockDownBrowser-Setup.exe...
+echo [4/4] Signing Output\LockDownBrowser-Setup.exe...
 powershell -NoProfile -ExecutionPolicy Bypass -File .\sign_binaries.ps1 -FilesToSign "Output\LockDownBrowser-Setup.exe"
 
 echo.

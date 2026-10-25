@@ -27,8 +27,22 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Verify wallpaper media assets
+        run: |
+          Write-Host "Verifying wallpaper media assets..."
+          if (Test-Path "wallpaper.mp4") { Write-Host "[OK] wallpaper.mp4 found" } else { Write-Warning "wallpaper.mp4 not found" }
+          if (Test-Path "wallpaper.webm") { Write-Host "[OK] wallpaper.webm found" } else { Write-Warning "wallpaper.webm not found" }
+          if (Test-Path "wallpaper_frames") { Write-Host "[OK] wallpaper_frames found" } else { Write-Warning "wallpaper_frames not found" }
+        shell: powershell
+
       - name: Build EXE with PyInstaller
         run: python -m PyInstaller LockDownBrowser.spec
+
+      - name: Verify PyInstaller bundled assets
+        run: |
+          Write-Host "Verifying bundled assets in dist\LockDownBrowser..."
+          Get-ChildItem -Recurse dist\LockDownBrowser -Filter "*wallpaper*" | Select-Object FullName
+        shell: powershell
 
       - name: Sign PyInstaller Binary
         run: powershell -ExecutionPolicy Bypass -File .\sign_binaries.ps1 -FilesToSign "dist\LockDownBrowser\LockDownBrowser.exe"

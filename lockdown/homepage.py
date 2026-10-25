@@ -16,6 +16,7 @@ from lockdown.config import (
     LOGO_TRANSPARENT,
     SEARCH_ENGINES,
     USER_DATA_DIR,
+    _resolve_asset,
     load_settings,
 )
 
@@ -103,8 +104,8 @@ def generate_home_html(
     current_engine = settings.get("search_engine", "Google")
 
     speed_dials_json = json.dumps(_managed_speed_dials())
-    wallpaper_file = BASE_DIR / "wallpaper.mp4"
-    wallpaper_webm_file = BASE_DIR / "wallpaper.webm"
+    wallpaper_file = _resolve_asset("wallpaper.mp4")
+    wallpaper_webm_file = _resolve_asset("wallpaper.webm")
     wallpaper_sources = []
     default_wallpaper_uri = ""
     if wallpaper_webm_file.exists():
@@ -127,7 +128,7 @@ def generate_home_html(
             default_wallpaper_uri = mp4_url
     wallpaper_uri = json.dumps(default_wallpaper_uri)
     wallpaper_source_html = "\n        ".join(wallpaper_sources)
-    wallpaper_frames_dir = BASE_DIR / "wallpaper_frames"
+    wallpaper_frames_dir = _resolve_asset("wallpaper_frames")
     wallpaper_frame_uris = []
     if wallpaper_frames_dir.exists():
         for frame in sorted(wallpaper_frames_dir.glob("frame_*.jpg")):

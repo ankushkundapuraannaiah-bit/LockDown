@@ -45,11 +45,6 @@ $RECYCLE.BIN/
 # Logs
 *.log
 
-# Large media / wallpaper assets (too large for GitHub — download separately)
-wallpaper.mp4
-wallpaper.webm
-wallpaper_frames/
-
 # Original logo source
 logo of lock down.jpg
 

@@ -20,6 +20,14 @@ added_datas = [
     ('lockdown_logo_transparent.png', '.'),
 ]
 
+# Media assets (wallpaper video and animation frames)
+for asset_name in ['wallpaper.mp4', 'wallpaper.webm']:
+    if os.path.exists(asset_name):
+        added_datas.append((asset_name, '.'))
+
+if os.path.isdir('wallpaper_frames'):
+    added_datas.append(('wallpaper_frames', 'wallpaper_frames'))
+
 a = Analysis(
     ['browser.py'],
     pathex=['.'],

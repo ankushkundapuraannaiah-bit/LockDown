@@ -8,7 +8,7 @@ from typing import Callable, Optional
 from flask import Flask, Response, abort, jsonify, request, send_file
 from werkzeug.serving import make_server
 
-from lockdown.config import BASE_DIR, load_settings, save_settings
+from lockdown.config import BASE_DIR, _resolve_asset, load_settings, save_settings
 from lockdown.download_manager import DownloadManager
 from lockdown.downloads_page import generate_downloads_html
 from lockdown.extension_manager import ExtensionManager
@@ -268,21 +268,21 @@ class HomeServer:
         # -------------------------------------------------------------------
         @self.app.get("/assets/wallpaper.webm")
         def wallpaper_webm():
-            path = BASE_DIR / "wallpaper.webm"
+            path = _resolve_asset("wallpaper.webm")
             if not path.exists():
                 abort(404)
             return send_file(path, mimetype="video/webm", conditional=True)
 
         @self.app.get("/assets/wallpaper.mp4")
         def wallpaper_video():
-            path = BASE_DIR / "wallpaper.mp4"
+            path = _resolve_asset("wallpaper.mp4")
             if not path.exists():
                 abort(404)
             return send_file(path, mimetype="video/mp4", conditional=True)
 
         @self.app.get("/assets/wallpaper_frames/<path:filename>")
         def wallpaper_frame(filename: str):
-            frames_dir = (BASE_DIR / "wallpaper_frames").resolve()
+            frames_dir = _resolve_asset("wallpaper_frames").resolve()
             path = (frames_dir / filename).resolve()
             if frames_dir not in path.parents or not path.exists() or path.suffix.lower() != ".jpg":
                 abort(404)

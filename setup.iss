@@ -50,6 +50,9 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 Source: "dist\LockDownBrowser\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "lockdown_logo.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "wallpaper.mp4"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "wallpaper.webm"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "wallpaper_frames\*"; DestDir: "{app}\wallpaper_frames"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\lockdown_logo.ico"

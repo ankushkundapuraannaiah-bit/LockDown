@@ -65,6 +65,9 @@ def _resolve_asset(rel_path: str) -> Path:
     return BASE_DIR / rel_path
 
 
+resolve_asset = _resolve_asset
+
+
 def _is_writable_dir(path: Path) -> bool:
     try:
         path.mkdir(parents=True, exist_ok=True)
