@@ -31,6 +31,10 @@ def main():
         except Exception:
             pass
 
+    # Pass Chromium flags to allow autoplay of muted media without user gestures
+    if "--autoplay-policy=no-user-gesture-required" not in sys.argv:
+        sys.argv.append("--autoplay-policy=no-user-gesture-required")
+
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setWindowIcon(get_app_icon())

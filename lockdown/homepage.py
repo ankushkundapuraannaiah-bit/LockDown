@@ -222,17 +222,25 @@ def generate_home_html(
             object-fit: cover;
             z-index: 1;
             filter: saturate(1.22) contrast(1.08) brightness(1.16);
-            background: #1b0800;
+            background: transparent;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }}
+
+        .wallpaper-video.is-playing {{
+            opacity: 1;
         }}
 
         .wallpaper-video.is-hidden {{
-            display: none;
+            display: none !important;
+            opacity: 0;
         }}
 
         .wallpaper-fallback {{
             z-index: 0;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background:
                 radial-gradient(circle at 26% 22%, rgba(255, 207, 63, 0.38), transparent 24%),
                 radial-gradient(circle at 74% 34%, rgba(255, 107, 26, 0.34), transparent 26%),
@@ -243,6 +251,7 @@ def generate_home_html(
             z-index: 0;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             filter: saturate(1.22) contrast(1.08) brightness(1.16);
         }}
 
@@ -1066,19 +1075,31 @@ def generate_home_html(
         function setupWallpaper() {{
             const video = document.getElementById("dailyWallpaper");
             const fallback = document.querySelector(".wallpaper-fallback");
+            let isPlaying = false;
+            let fallbackTimer = null;
 
             function useFrameFallback() {{
-                if (!fallback || !wallpaperFrames.length) return;
+                if (isPlaying) return;
+                if (!fallback || !wallpaperFrames || !wallpaperFrames.length) return;
                 if (video) {{
-                    video.pause();
+                    try {{ video.pause(); }} catch (_) {{}}
                     video.classList.add("is-hidden");
                 }}
+                fallback.classList.add("has-image");
+                if (fallbackTimer) return;
                 let frameIndex = 0;
-                fallback.classList.add("has-image", "is-animated");
-                fallback.style.backgroundImage = `url("${{wallpaperFrames[0]}}")`;
-                setInterval(() => {{
+                fallback.style.backgroundImage = 'url("' + wallpaperFrames[0] + '")';
+                const maxPreload = Math.min(wallpaperFrames.length, 12);
+                for (let i = 0; i < maxPreload; i++) {{
+                    const img = new Image();
+                    img.src = wallpaperFrames[i];
+                }}
+                fallbackTimer = setInterval(() => {{
                     frameIndex = (frameIndex + 1) % wallpaperFrames.length;
-                    fallback.style.backgroundImage = `url("${{wallpaperFrames[frameIndex]}}")`;
+                    fallback.style.backgroundImage = 'url("' + wallpaperFrames[frameIndex] + '")';
+                    const nextIdx = (frameIndex + maxPreload) % wallpaperFrames.length;
+                    const nextImg = new Image();
+                    nextImg.src = wallpaperFrames[nextIdx];
                 }}, 85);
             }}
 
@@ -1087,28 +1108,65 @@ def generate_home_html(
                 return;
             }}
 
-            let played = false;
-            video.addEventListener("playing", () => {{
-                played = true;
-                if (fallback) fallback.style.display = "none";
-            }});
-            video.addEventListener("error", () => {{
-                if (!played) useFrameFallback();
+            video.muted = true;
+            video.defaultMuted = true;
+
+            function markPlaying() {{
+                if (isPlaying) return;
+                isPlaying = true;
+                if (fallbackTimer) {{
+                    clearInterval(fallbackTimer);
+                    fallbackTimer = null;
+                }}
+                video.classList.remove("is-hidden");
+                video.classList.add("is-playing");
+            }}
+
+            video.addEventListener("playing", markPlaying);
+            video.addEventListener("timeupdate", () => {{
+                if (video.currentTime > 0) markPlaying();
             }});
 
-            const playPromise = video.play();
-            if (playPromise !== undefined) {{
-                playPromise.then(() => {{
-                    played = true;
-                    if (fallback) fallback.style.display = "none";
-                }}).catch(() => {{
+            video.addEventListener("error", () => {{
+                if (!isPlaying) useFrameFallback();
+            }});
+            const sources = video.querySelectorAll("source");
+            sources.forEach((src) => {{
+                src.addEventListener("error", () => {{
                     setTimeout(() => {{
-                        if (!played && video.readyState < 2) {{
+                        if (!isPlaying && video.networkState === 3) {{
                             useFrameFallback();
                         }}
-                    }}, 1200);
+                    }}, 400);
                 }});
+            }});
+
+            function attemptPlay() {{
+                if (isPlaying) return;
+                video.muted = true;
+                const p = video.play();
+                if (p !== undefined) {{
+                    p.then(markPlaying).catch(() => {{}});
+                }}
             }}
+
+            attemptPlay();
+            document.addEventListener("visibilitychange", () => {{
+                if (!document.hidden) attemptPlay();
+            }});
+            window.addEventListener("focus", attemptPlay);
+
+            setTimeout(() => {{
+                if (!isPlaying && video.paused) {{
+                    attemptPlay();
+                }}
+            }}, 800);
+
+            setTimeout(() => {{
+                if (!isPlaying) {{
+                    useFrameFallback();
+                }}
+            }}, 2500);
         }}
 
         function updateClock() {{

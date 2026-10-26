@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 APP_NAME = "Lock Down"
-APP_VERSION = "2.0.2"
+APP_VERSION = "2.0.3"
 APP_TAGLINE = "High-Security Editorial Browser with Brave Shields, Opera Workspaces & Zen Focus"
 
 # Palette: Yellow & White — warm, modern, high-contrast sunshine theme
